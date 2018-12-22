@@ -1,10 +1,11 @@
 #include "SoftwareSerial.h"
 #include "ObloqAdafruit.h"
 
-#define WIFI_SSID         "Fibertel WiFi425"
-#define WIFI_PASSWORD     "0143155948"
-#define ADAFRUIT_USERNAME "diegodorado"
-#define ADAFRUIT_KEY      "27edcfdd29a244b6b049abb07727c117"
+#define WIFI_SSID         "myWifiSSID"
+#define WIFI_PASSWORD     "myWIFI_PWD"
+#define ADAFRUIT_USERNAME "adafruit_user"
+#define ADAFRUIT_KEY      "adafruit_key"
+
 
 SoftwareSerial softSerial(10,11);
 ObloqAdafruit olq(&softSerial,WIFI_SSID,WIFI_PASSWORD,ADAFRUIT_USERNAME,ADAFRUIT_KEY);

@@ -81,8 +81,11 @@ public:
     void update();
     void subscribe(String topic);
     void subscribe(String topic, long updateInterval);
+    void publish(const String& topic, int value);
+    void publish(const String& topic, long value);
+    void publish(const String& topic, double value);
+    void publish(const String& topic, float value);
     void publish(const String& topic, const String& value);
-    Stream *_debug = NULL;
 
 private:
 
@@ -91,8 +94,6 @@ private:
     String _separator = "|";
 	String _ssid = "";
 	String _pwd = "";
-	String _url = "iot.dfrobot.com.cn";
-	String _port= "1883";
     String _iotId = "";
     String _iotPwd = "";
     String _ip = "";

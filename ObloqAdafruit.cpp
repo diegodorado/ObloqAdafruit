@@ -52,8 +52,8 @@ void ObloqAdafruit::update()
 	}
 
     // poll subscribed topics
-    pollTopicArray();
-    flushPublishQueue();
+    this->pollTopicArray();
+    this->flushPublishQueue();
 }
 
 void ObloqAdafruit::receiveData(const String& data)
@@ -161,12 +161,19 @@ void ObloqAdafruit::flushPublishQueue()
 }
 
 
+// convenience signatures
+void ObloqAdafruit::publish(const String& topic, int value)    { this->publish(topic, String(value));}
+void ObloqAdafruit::publish(const String& topic, long value)   { this->publish(topic, String(value));}
+void ObloqAdafruit::publish(const String& topic, double value) { this->publish(topic, String(value));}
+void ObloqAdafruit::publish(const String& topic, float value)  { this->publish(topic, String(value));}
+
 
 void ObloqAdafruit::publish(const String& topic, const String& value)
 {
     //add the message to the "one message queue"
     this->_publishQueue.topic = topic;
     this->_publishQueue.value = value;
+    //this flag forces to send this before polling subscribed topics
     this->_publishQueue.pending = true;
 }
 
@@ -222,8 +229,9 @@ void ObloqAdafruit::httpHandle(const String& code, const String& message){
 
     // a succesful post message
     // anyway many post messages dont show up
+    // or some appear as an empty message with code=200 ...bizarre...
     // here because they are too long....=(
-    if(code=="201"){
+    if(!message || code=="201"){
         // do nothing
     }
     else{

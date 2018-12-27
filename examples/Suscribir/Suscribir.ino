@@ -1,19 +1,18 @@
 #include "SoftwareSerial.h"
 #include "ObloqAdafruit.h"
 
-#define WIFI_SSID      "myWifiSSID"
-#define WIFI_PASSWORD  "myWIFI_PWD"
-#define IO_USERNAME    "adafruit_user"
-#define IO_KEY         "adafruit_key"
-
+#define WIFI_SSID      "SSID_de_Wifi"
+#define WIFI_PASSWORD  "PWD_de_WIFI"
+#define IO_USERNAME    "usuario_adafruit"
+#define IO_KEY         "key_adafruit"
 
 SoftwareSerial softSerial(10,11);
 ObloqAdafruit olq(&softSerial,WIFI_SSID,WIFI_PASSWORD,IO_USERNAME,IO_KEY);
 
-void msgHandle(const String& topic,const String& msg)
+void mensajeRecibido(const String& topic,const String& mensaje)
 {
-    if(topic=="lamp"){
-      if(msg=="ON"){
+    if(topic=="lampara"){
+      if(mensaje=="ON"){
         digitalWrite(13,1);
       }else{
         digitalWrite(13,0);
@@ -25,8 +24,8 @@ void setup()
 {
     pinMode(13,OUTPUT);
     softSerial.begin(9600);
-    olq.setMsgHandle(msgHandle);
-    olq.subscribe("lamp");
+    olq.setMsgHandle(mensajeRecibido);
+    olq.subscribe("lampara");
 }
 
 void loop()

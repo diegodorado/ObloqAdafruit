@@ -36,12 +36,10 @@ typedef struct  {
 } PublishQueue;
 
 
-enum State
-{
-    none,
-    ping,
-    wifiConnecting
-};
+#define STATE_NONE 0
+#define STATE_PING 1
+#define STATE_WIFI_CONNECTING 2
+
 
 class systemProtocol
 {
@@ -106,7 +104,7 @@ private:
 
     MsgHandle _msgHandle = NULL;
 
-    enum State _currentState = State::ping;
+    int _currentState = STATE_PING;
     Topic _topicArray[MAXTOPICNUMBER];
     int _topicCount = 0;
     int _currentTopic = 0;

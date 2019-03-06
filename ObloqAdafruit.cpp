@@ -23,8 +23,8 @@ void ObloqAdafruit::update()
     // update state machine
     switch(this->_currentState)
     {
-        case State::ping : ping(); break;
-        case State::wifiConnecting: connectWifi(); break;
+        case STATE_PING : ping(); break;
+        case STATE_WIFI_CONNECTING: connectWifi(); break;
         default:break;
     }
 
@@ -64,7 +64,7 @@ void ObloqAdafruit::receiveData(const String& data)
     {
         if(this->_receiveStringIndex[systemProtocol::systemCode] == SYSTEMPING)
         {
-            this->_currentState = State::wifiConnecting;
+            this->_currentState = STATE_WIFI_CONNECTING;
             this->_time = millis() - this->_wifiConnectInterval;
             this->_publishQueue.pending = false;
             this->_fetching = false;
@@ -75,7 +75,7 @@ void ObloqAdafruit::receiveData(const String& data)
         if(this->_receiveStringIndex[wifiProtocol::wifiCode] == WIFIDISCONNECT && this->_wifiState == WIFICONNECTED)
         {
             this->_wifiState = WIFIDISCONNECT;
-            this->_currentState = State::wifiConnecting;
+            this->_currentState = STATE_WIFI_CONNECTING;
             this->_publishQueue.pending = false;
             this->_fetching = false;
         }
@@ -83,7 +83,7 @@ void ObloqAdafruit::receiveData(const String& data)
         {
 			this->_ip = this->_receiveStringIndex[wifiProtocol::wifiMessage];
             this->_wifiState = WIFICONNECTED;
-            this->_currentState = State::none;
+            this->_currentState = STATE_NONE;
             this->_publishQueue.pending = false;
             this->_fetching = false;
         }

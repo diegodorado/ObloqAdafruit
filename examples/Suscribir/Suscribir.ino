@@ -1,5 +1,5 @@
-#include "SoftwareSerial.h"
-#include "ObloqAdafruit.h"
+#include <ObloqAdafruit.h>
+#include <SoftwareSerial.h>
 
 #define WIFI_SSID      "SSID_de_Wifi"
 #define WIFI_PASSWORD  "PWD_de_WIFI"

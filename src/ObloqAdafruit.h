@@ -2,11 +2,8 @@
 #define _ObloqAdafruit_H_
 #include "Arduino.h"
 
-
-#define MAXTOPICNUMBER 5
-
-#define SUCCESSED "1"
-#define FAILED    "2"
+#define TOPICS_COUNT 5
+#define QUEUE_COUNT 5
 
 #define SYSTEMTYPE "1"
 #define WIFITYPE   "2"
@@ -21,49 +18,30 @@
 #define WIFICONNECTED     "3"
 #define WIFICONNECTFAILED "4"
 
+#define STATE_PING 1
+#define STATE_WIFI_CONNECTING 2
+#define STATE_WIFI_CONNECTED 3
+
+// when fetching, wait for response before moving to another fecth.
+// the timeout is here in case of no response from previous fecth.
+#define FETCHING_TIMEOUT 60000
+#define PING_INTERVAL 2000
+#define WIFI_CONNECT_INTERVAL 60000
+#define POLL_INTERVAL 1000
+
 
 typedef struct  {
     String name;
     String lastMsg;
     long lastMillis;
-    long updateInterval;
 } Topic;
 
 typedef struct  {
     String topic;
     String value;
-    bool pending;
-} PublishQueue;
+} PublishQueueItem;
 
 
-#define STATE_NONE 0
-#define STATE_PING 1
-#define STATE_WIFI_CONNECTING 2
-
-
-class systemProtocol
-{
-public:
-    static const uint8_t systemType    = 0;
-    static const uint8_t systemCode    = 1;
-    static const uint8_t systemMessage = 2;
-};
-
-class wifiProtocol
-{
-public:
-    static const uint8_t wifiType    = 0;
-    static const uint8_t wifiCode    = 1;
-    static const uint8_t wifiMessage = 2;
-};
-
-class httpProtocol
-{
-public:
-    static const uint8_t httpType    = 0;
-    static const uint8_t httpCode    = 1;
-    static const uint8_t httpMessage = 2;
-};
 
 class ObloqAdafruit
 {
@@ -72,58 +50,42 @@ public:
 
 public:
     ObloqAdafruit(Stream *serial, const String& ssid, const String& pwd, const String& iotId, const String& iotPwd);
-    ~ObloqAdafruit();
-
-    void setMsgHandle(MsgHandle handle);
-    bool isWifiConnected();
+    void setMsgHandle(MsgHandle handle) {_msgHandle = handle;};
     void update();
     void subscribe(String topic);
-    void subscribe(String topic, long updateInterval);
-    void publish(const String& topic, int value);
-    void publish(const String& topic, long value);
-    void publish(const String& topic, double value);
-    void publish(const String& topic, float value);
+
     void publish(const String& topic, const String& value);
+    // convenience signatures
+    void publish(const String& topic, int value)    {publish(topic, String(value));};
+    void publish(const String& topic, long value)   {publish(topic, String(value));};
+    void publish(const String& topic, double value) {publish(topic, String(value));};
+    void publish(const String& topic, float value)  {publish(topic, String(value));};
 
 private:
-
     Stream *_serial = NULL;
-    String _receiveStringIndex[10] = {};
-    String _separator = "|";
 	String _ssid = "";
 	String _pwd = "";
     String _iotId = "";
     String _iotPwd = "";
-    String _ip = "";
-    PublishQueue _publishQueue = {"","",false};
-
-    bool _enable = false;
-    bool _isSerialReady = false;
+    PublishQueueItem _queue[QUEUE_COUNT];
+    unsigned int _queue_in = 0;
+    unsigned int _queue_out = 0;
     bool _fetching = false;
-    String _wifiState = "";
-
+    bool _polling = false;
     MsgHandle _msgHandle = NULL;
-
-    int _currentState = STATE_PING;
-    Topic _topicArray[MAXTOPICNUMBER];
+    int _state = STATE_PING;
+    Topic _topics[TOPICS_COUNT];
     int _topicCount = 0;
     int _currentTopic = 0;
-
     unsigned long _time = 0;
-    unsigned long _pingInterval = 2000;
-    unsigned long _wifiConnectInterval = 60000;
-    unsigned long _pollInterval = 1000;
 
 private:
     void httpHandle(const String& code, const String& message);
     void sendMsg(const String & msg);
-    void ping();
-    void connectWifi();
+    void readSerial();
     void receiveData(const String& data);
-    int  splitString(String data[],String str,const char* delimiters);
     void pollTopicArray();
     void flushPublishQueue();
-
 };
 
 #endif
